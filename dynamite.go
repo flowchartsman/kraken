@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"github.com/mgutz/ansi"
 	"io"
 	"log"
@@ -46,9 +47,15 @@ func main() {
 	log.Println("dynamite")
 
 	log.Println("reading names into memory")
+
 	fNames := getNameSlice(mNameFile, fNameFile)
 	lNames := getNameSlice(mNameFile, lNameFile)
-	log.Println(fNames.getOne(false), lNames.getOne(false), getCCNum())
+
+	for i := 0; i < 10; i++ {
+		cc := getCC()
+		log.Println(fNames.getOne(false), lNames.getOne(false), cc.CType, cc.Number, cc.CVV2, fmt.Sprintf("%s/%s", cc.expMo(), cc.expY()))
+	}
+
 }
 
 func downloadIfNot(url string, filename string) {

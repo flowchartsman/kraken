@@ -4,37 +4,64 @@ import (
 	"github.com/joeljunstrom/go-luhn"
 	//"log"
 	"math/rand"
-	"regexp"
+	//"regexp"
 	"strconv"
-	"strings"
+	//"strings"
+	"time"
 )
 
-var ccPrefixes = []string{
-	//American Express
-	"34",
-	"37",
-	//Discover
-	"6011",
-	"622126-622925",
-	"644-649",
-	"65",
-	//MasterCard
-	"50-55",
-	//Visa
-	"4",
+type card struct {
+	CType  string
+	Number string
+	CVV2   string
+	exp    time.Time
 }
 
-var hasDash = regexp.MustCompile("-")
+func (c card) expMo() string {
+	_, mo, _ := c.exp.Date()
+	return strconv.Itoa(int(mo))
+}
 
-func getCCNum() string {
-	prefix := ccPrefixes[rand.Intn(len(ccPrefixes))]
-	if hasDash.MatchString(prefix) {
-		prefixRange := strings.Split(prefix, "-")
-		prefixMin, _ := strconv.Atoi(prefixRange[0])
-		prefixMax, _ := strconv.Atoi(prefixRange[1])
-		prefixInt := rand.Intn(prefixMax-prefixMin) + prefixMin
-		return luhn.GenerateWithPrefix(12, strconv.Itoa(prefixInt))
+func (c card) expY() string {
+	y, _, _ := c.exp.Date()
+	return strconv.Itoa(y)
+}
+
+type pRange [2]int
+
+type cardDef struct {
+	cType    string
+	prefixes []pRange
+	length   int
+}
+
+func (cd *cardDef) getCard() card {
+	prefix := cd.prefixes[rand.Intn(len(cd.prefixes))]
+	var prefixInt int
+	if prefix[1] == 0 {
+		prefixInt = prefix[0]
 	} else {
-		return luhn.GenerateWithPrefix(12, prefix)
+		prefixInt = rand.Intn(prefix[1]-prefix[0]) + prefix[0]
 	}
+
+	//Expiration should be sometime at least a month out and within the next three years
+	exp := time.Now().Add(30 * 24 * time.Hour).Add(time.Duration(rand.Intn(2)) * 365 * 30 * 24 * time.Hour)
+
+	return card{
+		cd.cType,
+		luhn.GenerateWithPrefix(cd.length, strconv.Itoa(prefixInt)),
+		strconv.Itoa(rand.Intn(999)),
+		exp,
+	}
+}
+
+var cTable = []cardDef{
+	{"American Express", []pRange{{34}, {37}}, 15},
+	{"Discover", []pRange{{6011}, {622126, 622925}, {644, 649}, {65}}, 16},
+	{"Mastercard", []pRange{{50, 55}}, 16},
+	{"Visa", []pRange{{4}}, 16},
+}
+
+func getCC() card {
+	return cTable[rand.Intn(len(cTable))].getCard()
 }
