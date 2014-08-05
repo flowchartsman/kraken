@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"github.com/joeljunstrom/go-luhn"
 	"github.com/mgutz/ansi"
 	"io"
 	"log"
@@ -49,7 +48,7 @@ func main() {
 	log.Println("reading names into memory")
 	fNames := getNameSlice(mNameFile, fNameFile)
 	lNames := getNameSlice(mNameFile, lNameFile)
-	log.Println(fNames.getOne(false), lNames.getOne(false), luhn.Generate(12))
+	log.Println(fNames.getOne(false), lNames.getOne(false), getCCNum())
 }
 
 func downloadIfNot(url string, filename string) {
