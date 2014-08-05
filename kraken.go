@@ -22,7 +22,7 @@ func main() {
 
 	binPath, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
-		log.Fatalln("dynamite can't figure out where it is, so it's gonna go ahead and die now")
+		log.Fatalln("kraken can't figure out where it is, so it's gonna go ahead and die now")
 	}
 
 	dataPath := filepath.Join(binPath, "data")
@@ -43,15 +43,15 @@ func main() {
 	downloadIfNot("http://www.census.gov/genealogy/www/data/1990surnames/dist.female.first", fNameFile)
 	downloadIfNot("http://www.census.gov/genealogy/www/data/1990surnames/dist.all.last", lNameFile)
 
-	log.Println(ansi.ColorCode("yellow") + "*" + ansi.ColorCode("white") + "--" + ansi.ColorCode("red") + "=====" + ansi.ColorCode("reset"))
-	log.Println("dynamite")
+	log.Println(ansi.ColorCode("blue") + "\n  __\n (oO)\n /||\\\nkraken\n" + ansi.ColorCode("reset"))
+	log.Println("kraken")
 
 	log.Println("reading names into memory")
 
 	fNames := getNameSlice(mNameFile, fNameFile)
 	lNames := getNameSlice(mNameFile, lNameFile)
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 50; i++ {
 		cc := getCC()
 		log.Println(fNames.getOne(false), lNames.getOne(false), cc.CType, cc.Number, cc.CVV2, fmt.Sprintf("%s/%s", cc.expMo(), cc.expY()))
 	}
