@@ -28,4 +28,4 @@ $ ./dynamite
 ## Todo
 
 Pretty much everything.
-Dynamite will parse forms and attempt to do its damndest to pick the right fake-ass entries to put in the right fake-ass form fields before you tell it to just go to town. It will then gleefully report how many thousands and millions of fake entries it has made until you tell it to stop or (ideally) the scammer finds out what is going on, wails unto the heavens at the cruel impassiveness of the intertubes, and packs up his-or-her bag of snake oil and sails off into the sunset where they are hopefully eaten by sharks.
+Dynamite will parse forms and attempt to do its damnedest to pick the right fake-ass entries to put in the right fake-ass form fields before you tell it to just go to town. It will then gleefully report how many thousands and millions of fake entries it has made until you tell it to stop or (ideally) the scammer finds out what is going on, wails unto the heavens at the cruel impassiveness of the intertubes, and packs up his-or-her bag of snake oil and sails off into the sunset where they are hopefully eaten by sharks.
