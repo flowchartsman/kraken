@@ -1,13 +1,22 @@
 package main
 
 import (
+	"bufio"
+	"github.com/joeljunstrom/go-luhn"
 	"github.com/mgutz/ansi"
 	"io"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
+	"time"
+	"unicode"
+	"unicode/utf8"
 )
+
+type nameSlice []string
 
 func main() {
 
@@ -26,17 +35,25 @@ func main() {
 		}
 	}
 
-	downloadIfNot("http://www.census.gov/genealogy/www/data/1990surnames/dist.male.first", filepath.Join(binPath, "data", "mnames.txt"))
-	downloadIfNot("http://www.census.gov/genealogy/www/data/1990surnames/dist.female.first", filepath.Join(binPath, "data", "fnames.txt"))
+	mNameFile := filepath.Join(dataPath, "mnames.txt")
+	fNameFile := filepath.Join(dataPath, "fnames.txt")
+	lNameFile := filepath.Join(dataPath, "lnames.txt")
+
+	downloadIfNot("http://www.census.gov/genealogy/www/data/1990surnames/dist.male.first", mNameFile)
+	downloadIfNot("http://www.census.gov/genealogy/www/data/1990surnames/dist.female.first", fNameFile)
+	downloadIfNot("http://www.census.gov/genealogy/www/data/1990surnames/dist.all.last", lNameFile)
 
 	log.Println(ansi.ColorCode("yellow") + "*" + ansi.ColorCode("white") + "--" + ansi.ColorCode("red") + "=====" + ansi.ColorCode("reset"))
 	log.Println("dynamite")
+
+	log.Println("reading names into memory")
+	fNames := getNameSlice(mNameFile, fNameFile)
+	lNames := getNameSlice(mNameFile, lNameFile)
+	log.Println(fNames.getOne(false), lNames.getOne(false), luhn.Generate(12))
 }
 
 func downloadIfNot(url string, filename string) {
-
 	_, err := os.Stat(filename)
-
 	if os.IsNotExist(err) {
 		log.Printf("%s doesn't exist, downloading from %s\n", filename, url)
 		out, err := os.Create(filename)
@@ -59,6 +76,63 @@ func downloadIfNot(url string, filename string) {
 	}
 
 	return
+}
+
+func getNameSlice(files ...string) nameSlice {
+	var lines int64
+
+	for _, file := range files {
+		fh, err := os.Open(file)
+		if err != nil {
+			log.Fatalf("can't open file %s: %s", file, err)
+		}
+
+		scanner := bufio.NewScanner(fh)
+		for scanner.Scan() {
+			lines++
+		}
+		fh.Close()
+	}
+
+	out := make([]string, lines)
+
+	var idx int64
+
+	for _, file := range files {
+		fh, err := os.Open(file)
+		if err != nil {
+			log.Fatalf("can't open file %s: %s", file, err)
+		}
+
+		scanner := bufio.NewScanner(fh)
+		for scanner.Scan() {
+			out[idx] = strings.ToLower(strings.Split(scanner.Text(), " ")[0])
+			idx++
+		}
+		fh.Close()
+	}
+	return nameSlice(out)
+}
+
+func (ns nameSlice) getOne(capitalize bool) string {
+	idx := rand.Intn(len(ns))
+	if capitalize {
+		return upperFirst(ns[idx])
+	} else {
+		return ns[idx]
+	}
+}
+
+func upperFirst(s string) string {
+	if s == "" {
+		return ""
+	}
+	r, n := utf8.DecodeRuneInString(s)
+	return string(unicode.ToUpper(r)) + s[n:]
+}
+
+func init() {
+	rand.Seed(time.Now().UTC().UnixNano())
 }
 
 // 8===D EG
