@@ -45,7 +45,7 @@ func (cd *cardDef) getCard() card {
 	}
 
 	//Expiration should be sometime at least a month out and within the next three years
-	exp := time.Now().Add(30 * 24 * time.Hour).Add(time.Duration(rand.Intn(2)) * 365 * 30 * 24 * time.Hour)
+	exp := time.Now().Add(time.Duration(rand.Intn(3*335*24-31*24)+31*24) * time.Hour)
 
 	return card{
 		cd.cType,
