@@ -50,7 +50,7 @@ func (cd *cardDef) getCard() card {
 	return card{
 		cd.cType,
 		luhn.GenerateWithPrefix(cd.length, strconv.Itoa(prefixInt)),
-		strconv.Itoa(rand.Intn(999)),
+		strconv.Itoa(rand.Intn(999-100) + 100),
 		exp,
 	}
 }
