@@ -202,7 +202,7 @@ func downloadAndProcessStreetfile(url string, filename string) {
 	csv_out := csv.NewWriter(file)
 	defer csv_out.Flush()
 
-	log.Println("Downloading zip codes (this may take a while)")
+	log.Println("Downloading street names (this may take a while)")
 
 	resp, err := http.Get(url)
 	if err != nil {
